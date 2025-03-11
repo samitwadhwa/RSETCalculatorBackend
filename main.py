@@ -63,7 +63,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://soffit-egress.vercel.app/",
+        "https://soffit-egress.vercel.app/",  # Add your deployed frontend URL
+        "https://*.vercel.app"  # Optional: Allow all Vercel preview deployments
     ],
     allow_credentials=True,
     allow_methods=["*"],
