@@ -1,0 +1,50 @@
+# Install necessary libraries
+!pip install -U scikit-learn pandas catboost
+
+# Importing necessary libraries
+import numpy as np
+import pandas as pd
+import pickle
+from sklearn.model_selection import train_test_split
+from catboost import CatBoostRegressor
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+
+# Ask for manual upload of CSV file
+from google.colab import files
+uploaded = files.upload()
+
+# Load the CSV file
+file_name = next(iter(uploaded))
+data = pd.read_csv(file_name)
+
+# Splitting data into independent and dependent variables
+X = data.iloc[:, :5].values
+y = data.iloc[:, 5].values
+
+# Splitting data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Training the CatBoost model
+model = CatBoostRegressor(random_state=42, verbose=False)
+model.fit(X_train, y_train)
+
+# Making predictions
+y_pred = model.predict(X_test)
+
+# Saving the trained model
+model_filename = 'catboost_model.pkl'
+with open(model_filename, 'wb') as file:
+    pickle.dump(model, file)
+
+# Function to get prediction
+def get_prediction():
+    input_variables = [[float(input(f"Enter value for {data.columns[i]}: ")) for i in range(5)]]
+    predicted_output = model.predict(input_variables)
+    print("Predicted output:", predicted_output[0])
+
+# Prompt for prediction
+while True:
+    get_prediction()
+    another_prediction = input("Do you want to run another prediction? (Y/N): ").strip().lower()
+    if another_prediction != 'y':
+        break
